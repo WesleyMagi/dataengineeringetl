@@ -3,18 +3,18 @@ import json
 import pandas as pd
 
 
-def extract(SUBSCRIPTION_EVENTS_DATA_PATH, HARDWARE_DATA_PATH):
+def extract(subscription_events_data_path: str, hardware_data_path: str):
     """
     Extracts the data from different sources and gets the data ready for processing
 
-    :param SUBSCRIPTION_EVENTS_DATA_PATH: the path ot the subscription events file
-    :param HARDWARE_DATA_PATH: the path ot the hardware events file
+    :param subscription_events_data_path: the path ot the subscription events file
+    :param hardware_data_path: the path ot the hardware events file
 
     :return:json_data, orders_data, cancelled_subscriptions and hardware_df
     """
     print("Begin Extract step")
-    hardware_sales_df = pd.read_excel(HARDWARE_DATA_PATH)
-    json_data, orders_data, cancelled_subscriptions = parse_event_json(json_file=SUBSCRIPTION_EVENTS_DATA_PATH)
+    hardware_sales_df = pd.read_excel(hardware_data_path)
+    json_data, orders_data, cancelled_subscriptions = parse_event_json(json_file=subscription_events_data_path)
     print("Extract step complete")
 
     return json_data, orders_data, cancelled_subscriptions, hardware_sales_df
@@ -66,7 +66,7 @@ def plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_reve
     """
     Plot the total revenue to date for created subscriptions, renewals and hardware purchases
 
-    :return:
+    :return: No return, just plots the total revenue
     """
     print("Plotting total revenue.")
     plt.figure(2)
@@ -81,7 +81,7 @@ def plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_reve
 def plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_cancelled):
     """
     Plot the cumulative sum of revenue for created, renewed and hardware sales
-    :return:
+    :return: No return, just plots the cumulative sum of the revenue
     """
     print("Plotting cumulative revenue.")
     plt.figure(3)
