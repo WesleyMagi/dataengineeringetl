@@ -12,8 +12,10 @@ def extract(SUBSCRIPTION_EVENTS_DATA_PATH, HARDWARE_DATA_PATH):
 
     :return:json_data, orders_data, cancelled_subscriptions and hardware_df
     """
+    print("Begin Extract step")
     hardware_sales_df = pd.read_excel(HARDWARE_DATA_PATH)
     json_data, orders_data, cancelled_subscriptions = parse_event_json(json_file=SUBSCRIPTION_EVENTS_DATA_PATH)
+    print("Extract step complete")
 
     return json_data, orders_data, cancelled_subscriptions, hardware_sales_df
 
@@ -73,6 +75,7 @@ def plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_reve
     plt.ylabel('Revenue')
     plt.title('Revenue to date')
     plt.savefig("bi-output/revenue_to_date.png")
+    print("Total revenue plotted.")
 
 
 def plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_cancelled):
@@ -91,6 +94,7 @@ def plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_ca
     # cumulative_total_cancelled_revenue = df_filtered_cancelled["revenue"].cumsum().plot()
     plt.legend(["Created", "Renewals", "Hardware"])
     plt.savefig("bi-output/cumulative_sum.png")
+    print("Cumulative revenue plotted.")
 
 
 def cancellation_rate(dataframe, cancelled_subscriptions) -> float:
@@ -118,6 +122,7 @@ def cancellation_rate(dataframe, cancelled_subscriptions) -> float:
     pie_chart = plt.pie(values, labels=labels, autopct='%1.1f%%')
     plt.legend(pie_chart[0], labels, loc="best")
     plt.savefig("bi-output/cancellation_rate.png")
+    print("Cancellation rate plotted.")
 
     return cancellation_rate
 
@@ -130,12 +135,14 @@ def calculate_lifetime_value(subscription_events_df):
 
     :return: No return, just calculates and plots the lifetime cumulative value
     """
+    print("Plotting lifetime values.")
     plt.figure(4)
     lifetime_value = subscription_events_df.groupby("customer_id")["revenue"].sum().sort_values(ascending=False).head(10)
     lifetime_value.plot(x='customer_id', y='revenue', kind='bar')
     plt.savefig("bi-output/lifetime.png")
     print("The top 10 customers and their lifetime values are:")
     print(lifetime_value)
+    print("Lifetime values plotted.")
 
 
 def calculate_total_revenue_to_date(subscription_events_df, hardware_sales_df):
@@ -147,7 +154,7 @@ def calculate_total_revenue_to_date(subscription_events_df, hardware_sales_df):
 
     :return: No return, just plots and saves the revenue to date graph
     """
-    print("Calculating total revenue to date.")
+    print("Plotting total revenue to date.")
 
     # Hardware Events
     hardware_revenue = hardware_sales_df["revenue"].sum()
@@ -166,4 +173,4 @@ def calculate_total_revenue_to_date(subscription_events_df, hardware_sales_df):
 
     plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_revenue)
     plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_cancelled)
-    print("Successfully calculated total revenue to date.")
+    print("Total revenue to date plotted.")
