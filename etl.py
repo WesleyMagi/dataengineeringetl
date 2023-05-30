@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
-from utils.utils import cancellation_rate, calculate_lifetime_value
+from utils.utils import cancellation_rate, calculate_lifetime_value, plot_cumulative_sum, plot_revenue_sum
 
 HARDWARE_DATA_PATH = "data/hardware_sales.xlsx"
 CUSTOMER_DATA_PATH = "data/customers.csv"
@@ -15,7 +15,6 @@ cancelled_subscriptions = []
 # EXTRACT ------------------------------------------------------------------
 hardware_sales_df = pd.read_excel(HARDWARE_DATA_PATH)
 customer_df = pd.read_csv(CUSTOMER_DATA_PATH)
-print(customer_df)
 
 with open(SUBSCRIPTION_EVENTS_DATA_PATH, 'r') as subscription_events_file:
     for json_object in subscription_events_file:
@@ -65,14 +64,6 @@ df_filtered_cancelled = subscription_events_df[subscription_events_df["event_typ
 total_cancelled_revenue = df_filtered_cancelled["revenue"].sum()
 # cumulative_total_cancelled_revenue = df_filtered_cancelled["revenue"].cumsum().plot()
 
-# LOAD ------------------------------------------------------------------
-plt.bar(['Created', 'Renewed', 'Hardware'], [total_created_revenue, total_renewed_revenue, hardware_revenue])
-plt.xlabel('Event Type')
-plt.ylabel('Revenue')
-plt.title('Revenue to date')
-plt.show()
-
-cumulative_total_created_revenue = df_filtered_created["revenue"].cumsum().plot()
-cumulative_total_renewed_revenue = df_filtered_renewed["revenue"].cumsum().plot()
-cumulative_total_cancelled_revenue = df_filtered_cancelled["revenue"].cumsum().plot()
-plt.show()
+# PLOT ------------------------------------------------------------------
+plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_revenue)
+plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_cancelled)

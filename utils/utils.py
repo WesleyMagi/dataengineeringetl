@@ -5,6 +5,7 @@ def load():
 
     :return:
     """
+
     pass
 
 def extract():
@@ -14,18 +15,33 @@ def extract():
     """
     pass
 
-def plot_revenue_sum():
+
+def plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_revenue):
     """
-    Plots the revenue to a figure
+    Plot the total revenue to date for created subscriptions, renewals and hardware purchases
     :return:
     """
-    pass
+    print("Plotting total revenue.")
+    plt.figure(2)
+    plt.bar(['Created', 'Renewed', 'Hardware'], [total_created_revenue, total_renewed_revenue, hardware_revenue])
+    plt.xlabel('Event Type')
+    plt.ylabel('Revenue')
+    plt.title('Revenue to date')
+    plt.savefig("bi-output/revenue_to_date.png")
 
-def plot_cumulative_sum():
-    """
 
-    :return:
+def plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_cancelled):
     """
+    Plot the cumulative sum of revenue for created, renewed and hardware sales
+    :return: None
+    """
+    print("Plotting cumulative revenue.")
+    plt.figure(3)
+    cumulative_total_created_revenue = df_filtered_created["revenue"].cumsum().plot()
+    cumulative_total_renewed_revenue = df_filtered_renewed["revenue"].cumsum().plot()
+    cumulative_total_hardware_revenue = df_filtered_cancelled["revenue"].cumsum().plot()
+    # cumulative_total_cancelled_revenue = df_filtered_cancelled["revenue"].cumsum().plot()
+    plt.savefig("bi-output/cumulative_sum.png")
     pass
 
 
@@ -40,6 +56,7 @@ def cancellation_rate(dataframe, cancelled_subscriptions) -> float:
     :return: A float value representing the cancellation rate
     """
 
+    print("Plotting cancellation rate.")
     total_unique_orders = len(dataframe["order_id"].unique())
     cancelled_subscriptions = len(cancelled_subscriptions)
 
@@ -48,9 +65,10 @@ def cancellation_rate(dataframe, cancelled_subscriptions) -> float:
     values = [cancellation_rate, 1 - cancellation_rate]
     labels = ["Cancelled Subscriptions", "Active Subscriptions"]
 
+    plt.figure(1)
     pie_chart = plt.pie(values, labels=labels, autopct='%1.1f%%')
     plt.legend(pie_chart[0], labels, loc="best")
-    plt.show()
+    plt.savefig("bi-output/cancellation_rate.png")
 
     return cancellation_rate
 
