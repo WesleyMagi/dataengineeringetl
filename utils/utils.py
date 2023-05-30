@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import json
 
 def load():
     """
@@ -78,7 +79,37 @@ def parse_event_json(json_file):
     :param json_file:
     :return:
     """
-    pass
+    print("Parsing event JSON.")
+    json_data = []
+    orders_data = {}
+    cancelled_subscriptions = []
+
+    with open(json_file, 'r') as subscription_events_file:
+        for json_object in subscription_events_file:
+            json_parsed = json.loads(json_object)
+
+            event_type = json_parsed.get("event_type")
+            order_id = json_parsed.get("order_id")
+
+            if event_type == "subscription_created":
+                orders_data[order_id] = {
+                    "customer_id": json_parsed["customer_id"],
+                    "revenue": json_parsed["revenue"]
+                }
+            else:
+                related_data = orders_data.get(order_id)
+
+                if event_type == "subscription_cancelled":
+                    cancelled_subscriptions.append(order_id)
+
+                if related_data:
+                    json_parsed["customer_id"] = related_data.get("customer_id")
+                    json_parsed["revenue"] = related_data.get("revenue")
+
+            json_data.append(json_parsed)
+
+    print("Successfully parsed event JSON.")
+    return json_data, orders_data, cancelled_subscriptions
 
 
 def calculate_lifetime_value(dataframe):

@@ -1,7 +1,5 @@
 import pandas as pd
-import json
-import matplotlib.pyplot as plt
-from utils.utils import cancellation_rate, calculate_lifetime_value, plot_cumulative_sum, plot_revenue_sum
+from utils.utils import cancellation_rate, calculate_lifetime_value, plot_cumulative_sum, plot_revenue_sum, parse_event_json
 
 HARDWARE_DATA_PATH = "data/hardware_sales.xlsx"
 CUSTOMER_DATA_PATH = "data/customers.csv"
@@ -16,29 +14,7 @@ cancelled_subscriptions = []
 hardware_sales_df = pd.read_excel(HARDWARE_DATA_PATH)
 customer_df = pd.read_csv(CUSTOMER_DATA_PATH)
 
-with open(SUBSCRIPTION_EVENTS_DATA_PATH, 'r') as subscription_events_file:
-    for json_object in subscription_events_file:
-        json_parsed = json.loads(json_object)
-
-        event_type = json_parsed.get("event_type")
-        order_id = json_parsed.get("order_id")
-
-        if event_type == "subscription_created":
-            orders_data[order_id] = {
-                "customer_id": json_parsed["customer_id"],
-                "revenue": json_parsed["revenue"]
-            }
-        else:
-            related_data = orders_data.get(order_id)
-
-            if event_type == "subscription_cancelled":
-                cancelled_subscriptions.append(order_id)
-
-            if related_data:
-                json_parsed["customer_id"] = related_data.get("customer_id")
-                json_parsed["revenue"] = related_data.get("revenue")
-
-        json_data.append(json_parsed)
+json_data, orders_data, cancelled_subscriptions = parse_event_json(json_file=SUBSCRIPTION_EVENTS_DATA_PATH)
 
 # TRANSFORM ------------------------------------------------------------------
 subscription_events_df = pd.DataFrame(data=json_data)
