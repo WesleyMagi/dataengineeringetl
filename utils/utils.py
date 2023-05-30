@@ -11,7 +11,7 @@ def load():
 
 def extract():
     """
-
+    Extraction step of the data engineering pipeline
     :return:
     """
     pass
@@ -120,3 +120,30 @@ def calculate_lifetime_value(dataframe):
     """
     lifetime_value = dataframe.groupby("customer_id")["revenue"].sum().sort_values(ascending=False)
     return
+
+
+def calculate_total_revenue_to_date(subscription_events_df, hardware_sales_df):
+    """
+    Calculates the total revenue to date for created subscription, renewal and hardware events
+    :return: No return, juts plots and saves the revenue to date
+    """
+    print("Calculating total revenue to date.")
+
+    # Hardware Events
+    hardware_revenue = hardware_sales_df["revenue"].sum()
+
+    # Subscription Created
+    df_filtered_created = subscription_events_df[subscription_events_df["event_type"] == "subscription_created"]
+    total_created_revenue = df_filtered_created["revenue"].sum()
+
+    # Subscription Renewed
+    df_filtered_renewed = subscription_events_df[subscription_events_df["event_type"] == "subscription_renewed"]
+    total_renewed_revenue = df_filtered_renewed["revenue"].sum()
+
+    # Subscription Cancelled
+    df_filtered_cancelled = subscription_events_df[subscription_events_df["event_type"] == "subscription_cancelled"]
+    total_cancelled_revenue = df_filtered_cancelled["revenue"].sum()
+
+    plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_revenue)
+    plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_cancelled)
+    print("Successfully calculated total revenue to date.")
