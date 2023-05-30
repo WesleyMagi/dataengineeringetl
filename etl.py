@@ -1,6 +1,6 @@
 import pandas as pd
-from utils.utils import cancellation_rate, calculate_lifetime_value, plot_cumulative_sum, plot_revenue_sum, \
-    parse_event_json, calculate_total_revenue_to_date
+from utils.utils import cancellation_rate, calculate_lifetime_value, parse_event_json, \
+    calculate_total_revenue_to_date, extract
 
 HARDWARE_DATA_PATH = "data/hardware_sales.xlsx"
 CUSTOMER_DATA_PATH = "data/customers.csv"
@@ -11,8 +11,8 @@ orders_data = {}
 cancelled_subscriptions = []
 
 # EXTRACT && TRANSFORM ------------------------------------------------------------------
+json_data, orders_data, cancelled_subscriptions, hardware_sales_df = extract(SUBSCRIPTION_EVENTS_DATA_PATH, HARDWARE_DATA_PATH)
 hardware_sales_df = pd.read_excel(HARDWARE_DATA_PATH)
-customer_df = pd.read_csv(CUSTOMER_DATA_PATH)
 
 json_data, orders_data, cancelled_subscriptions = parse_event_json(json_file=SUBSCRIPTION_EVENTS_DATA_PATH)
 
