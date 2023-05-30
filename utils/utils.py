@@ -1,21 +1,6 @@
 import matplotlib.pyplot as plt
 import json
 
-def load():
-    """
-
-    :return:
-    """
-
-    pass
-
-def extract():
-    """
-    Extraction step of the data engineering pipeline
-    :return:
-    """
-    pass
-
 
 def plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_revenue):
     """
@@ -34,14 +19,18 @@ def plot_revenue_sum(total_created_revenue, total_renewed_revenue, hardware_reve
 def plot_cumulative_sum(df_filtered_created, df_filtered_renewed, df_filtered_cancelled):
     """
     Plot the cumulative sum of revenue for created, renewed and hardware sales
-    :return: None
+    :return:
     """
     print("Plotting cumulative revenue.")
     plt.figure(3)
-    cumulative_total_created_revenue = df_filtered_created["revenue"].cumsum().plot()
-    cumulative_total_renewed_revenue = df_filtered_renewed["revenue"].cumsum().plot()
-    cumulative_total_hardware_revenue = df_filtered_cancelled["revenue"].cumsum().plot()
+    plt.xlabel('Time')
+    plt.ylabel('Revenue')
+    plt.title('Cumulative Revenue to date')
+    cumulative_total_created_revenue = df_filtered_created["revenue"].cumsum().plot(legend=True)
+    cumulative_total_renewed_revenue = df_filtered_renewed["revenue"].cumsum().plot(legend=True)
+    cumulative_total_hardware_revenue = df_filtered_cancelled["revenue"].cumsum().plot(legend=True)
     # cumulative_total_cancelled_revenue = df_filtered_cancelled["revenue"].cumsum().plot()
+    plt.legend(["Created", "Renewals", "Hardware"])
     plt.savefig("bi-output/cumulative_sum.png")
     pass
 
@@ -67,17 +56,21 @@ def cancellation_rate(dataframe, cancelled_subscriptions) -> float:
     labels = ["Cancelled Subscriptions", "Active Subscriptions"]
 
     plt.figure(1)
+    plt.title('Active vs. Cancelled subscriptions')
     pie_chart = plt.pie(values, labels=labels, autopct='%1.1f%%')
     plt.legend(pie_chart[0], labels, loc="best")
     plt.savefig("bi-output/cancellation_rate.png")
 
     return cancellation_rate
 
-def parse_event_json(json_file):
+def parse_event_json(json_file: str):
     """
-    Parses the event JSON file and enriches event data with supplementary customer data
-    :param json_file:
-    :return:
+    Parses the event JSON file and enriches event data with supplementary customer data.
+
+    We return the parsed json_data, the supplementary orders data anda list of cancelled subscriptions
+    :param json_file: A string representation of the json file to be parsed/processed
+
+    :return: json_data, orders_data, cancelled_subscriptions
     """
     print("Parsing event JSON.")
     json_data = []
@@ -112,20 +105,22 @@ def parse_event_json(json_file):
     return json_data, orders_data, cancelled_subscriptions
 
 
-def calculate_lifetime_value(dataframe):
+def calculate_lifetime_value(subscription_events_df):
     """
     Calculates the lifetime value per customer and orders in descending order
-    :param dataframe:
-    :return:
+    :param subscription_events_df: data frame containing subscription events
+    :return: No return, just calculates and plots the lifetime cumulative value
     """
-    lifetime_value = dataframe.groupby("customer_id")["revenue"].sum().sort_values(ascending=False)
-    return
+    plt.figure(4)
+    lifetime_value = subscription_events_df.groupby("customer_id")["revenue"].sum().sort_values(ascending=False).head(10)
+    lifetime_value.plot(x='customer_id', y='revenue', kind='bar')
+    plt.savefig("bi-output/lifetime.png")
 
 
 def calculate_total_revenue_to_date(subscription_events_df, hardware_sales_df):
     """
     Calculates the total revenue to date for created subscription, renewal and hardware events
-    :return: No return, juts plots and saves the revenue to date
+    :return: No return, just plots and saves the revenue to date graph
     """
     print("Calculating total revenue to date.")
 
